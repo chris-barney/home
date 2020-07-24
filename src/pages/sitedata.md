@@ -18,8 +18,8 @@ socialLinks:
     url: https://www.linkedin.com/in/chrisnbarney/
     show: true
   pinterest:
-    url: ""
-    show: false
+    url: https://www.pinterest.com/ChrisBarney_
+    show: true
   instagram:
     url: https://instagram.com/chrisnbarney
     show: true

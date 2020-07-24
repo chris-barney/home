@@ -18,11 +18,12 @@ missionStatement: A sales and marketing consultant with an underdog mentality
   relationships and serving as a reliable resource to assist with any issues. He
   maintains a commitment to the values of integrity, truth, and honesty above
   all else.
-shortBiography: "Based in Phoenix, Arizona, Chris Barney is a Senior Sales and
-  Marketing Consultant who draws on nearly a decade of experience. Currently, he
-  is a Senior Specialist for Advanced Client Solutions at ReputationDefender in
-  Tempe, a company that provides online reputation management and marketing
-  solutions. Chris is responsible for developing and implementing sales
-  strategies in both inbound and outbound capacities for clients worldwide. "
+shortBiography: An experienced marketing consultant and sales professional who
+  resides in Phoenix, Arizona, Chris Barney serves as a Senior Specialist for
+  Advanced Client Solutions at the Tempe-based online reputation management and
+  marketing firm ReputationDefender. In 2016, he joined the company as an
+  Account Manager and oversaw between 400-500 marketing and reputation projects.
+  Responsible for bringing in $660,000 annually in renewal bookings, he
+  surpassed 100% quota in his first month straight out of training.
 showRecentPosts: false
 ---

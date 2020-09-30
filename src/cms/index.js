@@ -18,6 +18,7 @@ const pages = [
     additionalFields: [
       'missionStatement',
       'shortBiography',
+      'learnMoreButton',
       'extraContent',
       'showRecentPosts',
     ],
@@ -26,21 +27,21 @@ const pages = [
     label: 'About Page',
     file: 'src/pages/about.md',
     templateKey: 'about-page',
-    pageSlug: '/about',
+    pageSlug: '/about/',
     additionalFields: ['longBiography_MD', 'extraContent'],
   },
   {
     label: 'Blog Archive Page',
     file: 'src/pages/blog/index.md',
     templateKey: 'blog-archive',
-    pageSlug: '/blog',
+    pageSlug: '/blog/',
     additionalFields: [],
   },
   {
     label: 'Contact Page',
     file: 'src/pages/contact.md',
     templateKey: 'contact-page',
-    pageSlug: '/contact',
+    pageSlug: '/contact/',
     additionalFields: ['formText'],
   },
 ]
@@ -64,7 +65,7 @@ CMS.init({
       {
         name: 'pages',
         label: 'Pages',
-        files: pages.map(data => page(data)),
+        files: pages.map((data) => page(data)),
       },
       blog,
     ],

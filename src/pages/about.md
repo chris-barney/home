@@ -8,7 +8,7 @@ schemaType: AboutPage
 header: About Chris Barney
 subheader: Career highlights past and present
 featuredImage:
-  src: /img/barney.jpeg
+  src: /img/about.jpg
   alt: Headshot of Chris Barney, Marketing Consultant
   caption: null
 longBiography_MD: >-

@@ -2,9 +2,12 @@ import React from 'react'
 import moment from 'moment'
 import PropTypes from 'prop-types'
 import { graphql } from 'gatsby'
-import { Layout, PreviewableImage } from '../components'
+import { Layout, PreviewableImage, HTMLContent } from '../components'
 import { useSiteData } from '../hooks'
 import { featuredImagePropTypes } from '../proptypes'
+import { seoProps, getValidDates } from '../utils'
+
+const Moment = moment().constructor
 
 export const BlogPostTemplate = ({
   pageTitle,
@@ -12,11 +15,15 @@ export const BlogPostTemplate = ({
   date,
   dateModified,
   content,
-  featuredImage: { src, alt, caption },
+  featuredImage,
   isPreview,
+  inlineImages,
 }) => {
   const hasImg =
-    src && (src.childImageSharp || (typeof src === 'string' && src.length > 1))
+    featuredImage &&
+    featuredImage.src &&
+    (featuredImage.src.childImageSharp ||
+      (typeof featuredImage.src === 'string' && featuredImage.src.length > 1))
 
   return (
     <article
@@ -31,13 +38,22 @@ export const BlogPostTemplate = ({
           <div className="post-meta">
             <span className="blog-post-author">by {name}</span>
             <br />
-            <span className="post-meta-date">Published: {date}</span>
-            {!!dateModified && dateModified !== date && (
-              <span className="post-meta-date modified">
-                <br />
-                Last updated: {dateModified}
-              </span>
-            )}
+            <time
+              dateTime={date.format('YYYY-MM-DD')}
+              className="post-meta-date"
+            >
+              Published: {date.format('MMM D, YYYY')}
+            </time>
+            {dateModified.isValid() &&
+              !dateModified.startOf('day').isSame(date.startOf('day')) && (
+                <time
+                  dateTime={dateModified.format('YYYY-MM-DD')}
+                  className="post-meta-date modified"
+                >
+                  <br />
+                  Last updated: {dateModified.format('MMM D, YYYY')}
+                </time>
+              )}
           </div>
         )}
       </header>
@@ -49,15 +65,16 @@ export const BlogPostTemplate = ({
           >
             <PreviewableImage
               isPreview={isPreview}
-              src={src}
-              alt={alt}
-              caption={caption}
+              src={featuredImage.src}
+              alt={featuredImage.alt}
+              caption={featuredImage.caption}
             />
           </figure>
         )}
-        <div
+        <HTMLContent
           className="post-content-body-text"
-          dangerouslySetInnerHTML={{ __html: content }}
+          content={content}
+          inlineImages={inlineImages}
         />
       </section>
     </article>
@@ -67,40 +84,31 @@ export const BlogPostTemplate = ({
 const BlogPost = ({ data }) => {
   const { name } = useSiteData()
   const {
-    templateKey,
     pageTitle,
-    metaDescription,
-    schemaType,
     featuredImage,
-    date,
+    date: userDate,
   } = data.markdownRemark.frontmatter
-  const { slug, gitAuthorTime, gitCreatedTime } = data.markdownRemark.fields
-
+  const {
+    gitAuthorTime,
+    gitCreatedTime,
+    inlineImages,
+  } = data.markdownRemark.fields
+  const { date, dateModified } = getValidDates(
+    userDate,
+    gitAuthorTime,
+    gitCreatedTime,
+  )
   const pageProps = {
     pageTitle,
     name,
-    date: date || gitCreatedTime,
-    dateModified:
-      gitAuthorTime !== 'Invalid date'
-        ? moment(gitAuthorTime).format('MMM D, YYYY')
-        : null,
+    date,
+    dateModified,
     featuredImage,
     content: data.markdownRemark.html,
+    inlineImages,
   }
-
-  const layoutProps = {
-    pageTitle,
-    metaDescription,
-    slug,
-    templateKey,
-    schemaType,
-    featuredImage,
-    gitAuthorTime,
-    gitCreatedTime: date,
-  }
-
   return (
-    <Layout {...layoutProps}>
+    <Layout seoProps={seoProps(data)}>
       <BlogPostTemplate {...pageProps} />
     </Layout>
   )
@@ -109,11 +117,12 @@ const BlogPost = ({ data }) => {
 BlogPostTemplate.propTypes = {
   pageTitle: PropTypes.string.isRequired,
   name: PropTypes.string.isRequired,
-  date: PropTypes.string.isRequired,
-  dateModified: PropTypes.string.isRequired,
+  date: PropTypes.instanceOf(Moment).isRequired,
+  dateModified: PropTypes.instanceOf(Moment).isRequired,
   content: PropTypes.string.isRequired,
   featuredImage: featuredImagePropTypes,
   isPreview: PropTypes.bool,
+  inlineImages: PropTypes.array,
 }
 
 export default BlogPost
@@ -127,6 +136,16 @@ export const pageQuery = graphql`
         slug
         gitAuthorTime
         gitCreatedTime
+        inlineImages {
+          childImageSharp {
+            fluid(maxWidth: 1000, quality: 80, cropFocus: CENTER) {
+              ...GatsbyImageSharpFluid_withWebp
+              originalName
+              presentationWidth
+              presentationHeight
+            }
+          }
+        }
       }
       frontmatter {
         templateKey
@@ -137,8 +156,18 @@ export const pageQuery = graphql`
         featuredImage {
           src {
             childImageSharp {
-              fluid(maxWidth: 1200, quality: 100) {
+              fluid(
+                maxWidth: 1200
+                maxHeight: 675
+                quality: 80
+                cropFocus: CENTER
+              ) {
                 ...GatsbyImageSharpFluid_withWebp
+                originalName
+              }
+              original {
+                height
+                width
               }
             }
           }

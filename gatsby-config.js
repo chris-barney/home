@@ -1,5 +1,3 @@
-const path = require('path')
-
 module.exports = {
   siteMetadata: {
     title: 'Gatsby London',
@@ -25,31 +23,22 @@ module.exports = {
       {
         label: 'Muli',
         value: 'muli',
-        styles: 'family=Muli:ital,wght@0,400;0,700;1,400;1,700',
       },
       {
         label: 'Lora & Merriweather',
         value: 'lora',
-        styles:
-          'family=Lora:wght@400;700&family=Merriweather:ital,wght@0,400;0,700;1,400;1,700',
       },
       {
         label: 'Proza Libre & Open Sans',
         value: 'proza',
-        styles:
-          'family=Open+Sans:ital,wght@0,400;0,700;1,400;1,700&family=Proza+Libre:wght@400;700',
       },
       {
         label: 'Rubik & Karla',
         value: 'rubik',
-        styles:
-          'family=Karla:ital,wght@0,400;0,700;1,400;1,700&family=Rubik:wght@400;700',
       },
       {
         label: 'Poppins & PT Serif',
         value: 'popp',
-        styles:
-          'family=PT+Serif:ital,wght@0,400;0,700;1,400;1,700&family=Poppins:wght@400;700',
       },
     ],
   },
@@ -72,6 +61,7 @@ module.exports = {
       },
     },
     'gatsby-plugin-catch-links',
+    'gatsby-plugin-loadable-components-ssr',
     'gatsby-plugin-sharp',
     'gatsby-transformer-sharp',
     {
@@ -95,7 +85,7 @@ module.exports = {
           return markdownRemark.frontmatter.siteUrl
         },
         serialize: ({ markdownRemark, allSitePage }) =>
-          allSitePage.nodes.map(node => {
+          allSitePage.nodes.map((node) => {
             return {
               url: `${markdownRemark.frontmatter.siteUrl}${node.path}`,
               changefreq: `daily`,
@@ -155,12 +145,54 @@ module.exports = {
       resolve: 'gatsby-plugin-purgecss', // purges all unused/unreferenced css rules
       options: {
         develop: false, // Activates purging in npm run develop
+        printRejected: true,
         purgeOnly: ['/style/all.sass'], // applies purging only on the bulma css file
         // content: [path.join(process.cwd(), 'src/**/!(*.d).{ts,js,jsx,tsx,md,mdx}')]
-        whitelistPatterns: [/^table$/, /^t(body|h|d|r)$/, /^blockquote$/],
-        // whitelistPatternsChildren: [],
+        whitelistPatterns: [
+          /^table$/,
+          /^t(body|h|d|r)$/,
+          /^blockquote$/,
+          /^gatsby-resp-image/,
+        ],
+        whitelistPatternsChildren: [
+          /^gatsby-image-wrapper/,
+          /^in-view$/,
+          /^londn$/,
+          /^sand$/,
+          /^coral$/,
+          /^sun$/,
+          /^muli$/,
+          /^lora$/,
+          /^proza$/,
+          /^rubik$/,
+          /^popp$/,
+        ],
       },
     }, // must be after other CSS plugins
+    {
+      resolve: `gatsby-plugin-manifest`,
+      options: {
+        name: `Website`,
+        short_name: `website`,
+        start_url: `/`,
+        background_color: `#ffffff`,
+        theme_color: `#131313`,
+        display: `standalone`,
+        icon: `static/img/favicon-32x32.png`, // This path is relative to the root of the site.
+        cache_busting_mode: 'none',
+        icon_options: {
+          purpose: `maskable`,
+        },
+      },
+    },
+    {
+      resolve: 'gatsby-plugin-offline',
+      options: {
+        workboxConfig: {
+          globPatterns: ['**/img*'],
+        },
+      },
+    },
     {
       resolve: 'gatsby-plugin-netlify-cms',
       options: {
